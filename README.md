@@ -1,2 +1,2 @@
 # rocky-services
-Docker-Compose file with different Services like DDNS
+url -O https://raw.githubusercontent.com/derFinlay/test/refs/heads/main/install.sh && ./install.sh
