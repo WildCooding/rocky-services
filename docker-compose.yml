@@ -85,7 +85,8 @@ services:
     umbrel:
         image: dockurr/umbrel:latest
         restart: unless-stopped
-        ports: 3006:80
+        ports:
+            - 3006:80
         networks:
             - proxy
         volumes:
