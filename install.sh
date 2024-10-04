@@ -14,7 +14,7 @@ docker version
 docker compose version
 
 #clone setup repo
-git clone https://github.com/derFinlay/test.git services
+git clone https://github.com/wildcooding/rocky-services.git services
 
 cd services
 
