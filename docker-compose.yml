@@ -47,12 +47,34 @@ services:
     image: apache
 
   umbrel:
+    image: dockurr/umbrel:latest
+    restart: unless-stopped
+    ports: 3003:80
+    networks:
+    - proxy
 
   cosmos:
+    image: azukaar/cosmos-server:latest
+    restart: unless-stopped
+    ports: 3004:80
+    networks:
+    - proxy
 
   backup:
 
   adguard:
+    image: adguard/adguardhome:latest
+    restart: unless-stopped
+    ports: 3005:8080
+    networks:
+    - proxy
+
+  spdf:
+    image: frooodle/s-pdf:latest
+    restart: unless-stopped
+    ports: 3006:80
+    networks:
+    - proxy
 
 networks:
   proxy:
