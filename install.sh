@@ -5,7 +5,7 @@ mkdir -p /var/obsidian/data
 #update system and install docker, compose and git
 sudo dnf check-update
 sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo dnf install docker-ce docker-ce-cli containerd.io docker-compose-plugin git
+sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin git
 
 #enable docker (autostart)
 sudo systemctl start docker
