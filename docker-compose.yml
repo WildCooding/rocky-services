@@ -1,4 +1,12 @@
 services:
+    haproxy:
+        cap_add:
+            - NET_ADMIN
+        image: haproxy:2.3
+        network_mode: host
+        volumes:
+            - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+
     obsidian:
         networks:
             - proxy
@@ -11,7 +19,7 @@ services:
             - TZ=Etc/UTC
             - FM_HOME=/config/data
         volumes:
-            - /var/obsidian:/config
+            - /data/obsidian:/config
         ports:
             - 3000:3000
         devices:
@@ -30,56 +38,84 @@ services:
         networks:
             - proxy
 
-    haproxy:
-        cap_add:
-            - NET_ADMIN
-        image: haproxy:2.3
-        network_mode: host
+    adguard:
+        image: adguard/adguardhome
+        restart: unless-stopped
+        ports:
+            - "53:53"
+            - "3002:80/tcp"
+            - "3003:3000/tcp"
+            - "853:853/tcp"
+            - "784:784/udp"
+            - "853:853/udp"
+            - "8853:8853/udp"
+            - "5443:5443"
         volumes:
-            - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+            - /data/adguard/work:/opt/adguardhome/work
+            - /data/adguard/confdir:/opt/adguardhome/conf
+        networks:
+            - proxy
+
+    spdf:
+        image: frooodle/s-pdf:latest
+        ports:
+            - "3004:8080"
+        environment:
+            DOCKER_ENABLE_SECURITY: "false"
+            SECURITY_ENABLELOGIN: "false"
+            LANGS: "en_GB,en_US,ar_AR,de_DE,fr_FR,es_ES,zh_CN,zh_TW,ca_CA,it_IT,sv_SE,pl_PL,ro_RO,ko_KR,pt_BR,ru_RU,el_GR,hi_IN,hu_HU,tr_TR,id_ID"
+            SYSTEM_DEFAULTLOCALE: en-US
+            UI_APPNAME: Wildcoding-PDF
+            UI_HOMEDESCRIPTION: Wildcoding PDF
+            UI_APPNAMENAVBAR: WILDCODING PDF
+            SYSTEM_MAXFILESIZE: "100"
+            METRICS_ENABLED: "false"
+            SYSTEM_GOOGLEVISIBILITY: "false"
+            restart: unless-stopped
+        networks:
+            - proxy
+
+    # dashboard:
+    #     image: apache
+    # ports: 3005:80
+
+    # networks:
+    #         - proxy
+
+    umbrel:
+        image: dockurr/umbrel:latest
+        restart: unless-stopped
+        ports: 3006:80
+        networks:
+            - proxy
+        volumes:
+            - "/data/umbrel:/data"
+            - "/var/run/docker.sock:/var/run/docker.sock"
+        stop_grace_period: 1m
+
+    cosmos:
+        image: azukaar/cosmos-server:latest
+        privileged: true
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
+            - /:/mnt/host
+            - /data/cosmos:/config
+        restart: unless-stopped
+        ports: 3007:80
+        networks:
+            - proxy
 
     ddns:
         image: yalnif/cloudflare-ddns-updater
         volumes:
             - ./ddns/config.yml:/ddns/config.yml
 
-    dashboard:
-        image: apache
-
-    umbrel:
-        image: dockurr/umbrel:latest
-        restart: unless-stopped
-        ports: 3003:80
-        networks:
-            - proxy
-
-    cosmos:
-        image: azukaar/cosmos-server:latest
-        restart: unless-stopped
-        ports: 3004:80
-        networks:
-            - proxy
-
     backup:
-
-    adguard:
-        image: adguard/adguardhome:latest
-        restart: unless-stopped
-        ports: 3005:8080
-        networks:
-            - proxy
-
-    spdf:
-        image: frooodle/s-pdf:latest
-        restart: unless-stopped
-        ports: 3006:80
-        networks:
-            - proxy
-
-    ftp-backup:
         image: wildcooding/ftp-backup
         volumes:
             - ./config.yml:/ftp-backup/config.yml
+            - /data/obsidian:/config
 
 networks:
     proxy:
