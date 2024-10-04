@@ -116,7 +116,7 @@ services:
     backup:
         image: wildcoding/ftp-backup
         volumes:
-            - ./config.yml:/ftp-backup/config.yml
+            - ./backup/config.yml:/ftp-backup/config.yml
             - /data/obsidian:/config
 
 networks:
