@@ -114,7 +114,7 @@ services:
             - ./ddns/config.yml:/ddns/config.yml
 
     backup:
-        image: wildcooding/ftp-backup
+        image: wildcoding/ftp-backup
         volumes:
             - ./config.yml:/ftp-backup/config.yml
             - /data/obsidian:/config
