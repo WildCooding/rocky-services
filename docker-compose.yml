@@ -1,0 +1,59 @@
+services:
+  obsidian:
+    networks:
+      - proxy
+    image: lscr.io/linuxserver/obsidian:latest
+    security_opt:
+      - seccomp:unconfined #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - FM_HOME=/config/data
+    volumes:
+      - /var/obsidian:/config
+    ports:
+      - 3000:3000
+    devices:
+      - /dev/dri:/dev/dri #optional
+    shm_size: "1gb"
+    restart: unless-stopped
+
+  tools:
+    image: corentinth/it-tools:latest
+    restart: unless-stopped
+    ports:
+        - 3001:80
+    environment:
+        - UID=1000
+        - GID=1000
+    networks:
+      - proxy
+
+  haproxy:
+    cap_add:
+      - NET_ADMIN
+    image: haproxy:2.3
+    network_mode: host
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+
+  ddns:
+    image: yalnif/cloudflare-ddns-updater
+    volumes:
+      - ./ddns/config.yml:/ddns/config.yml
+
+  dashboard:
+    image: apache
+
+  umbrel:
+
+  cosmos:
+
+  backup:
+
+  adguard:
+
+networks:
+  proxy:
+    name: proxy
